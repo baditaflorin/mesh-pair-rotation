@@ -20,9 +20,9 @@ two-week sprints or kanban-with-arbitrary-cadence can pick their own.
 Yjs structure:
 
 ```ts
-Y.Array<string>("roster")                       // names
-Y.Map<sprintId, Sprint>("sprints")              // current + recent
-Y.Map<pairKey, { lastPaired: number }>("history")  // accumulates forever
+Y.Array<string>("roster"); // names
+Y.Map<sprintId, Sprint>("sprints"); // current + recent
+Y.Map<pairKey, { lastPaired: number }>("history"); // accumulates forever
 ```
 
 `Sprint = { pairs: [name, name][], lockedPairs?, startedAt: number,
