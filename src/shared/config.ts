@@ -1,6 +1,9 @@
 export const appConfig = {
   appName: "mesh-pair-rotation",
   storagePrefix: "mesh-pair-rotation",
+  description:
+    "Mob-program rotation timer with freshness-aware pair matching — picks who's been apart longest.",
+  accentHex: "#f5a524",
   version: __APP_VERSION__,
   commit: __GIT_COMMIT__,
   repositoryUrl: "https://github.com/baditaflorin/mesh-pair-rotation",

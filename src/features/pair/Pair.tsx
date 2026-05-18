@@ -21,7 +21,6 @@ type Props = {
   roomId: string;
   myName: string;
   flipIntervalMin: number;
-  onOpenSettings: () => void;
 };
 
 function isoWeek(d: Date = new Date()): string {
@@ -37,7 +36,7 @@ function isoWeek(d: Date = new Date()): string {
   return `${d.getUTCFullYear()}-W${week.toString().padStart(2, "0")}`;
 }
 
-export function PairView({ roomId, myName, flipIntervalMin, onOpenSettings }: Props) {
+export function PairView({ roomId, myName, flipIntervalMin }: Props) {
   const [armed, setArmed] = useState(false);
   const [roster, setRoster] = useState<string[]>([]);
   const [sprintId, setSprintId] = useState<string>(() => isoWeek());
@@ -211,11 +210,8 @@ export function PairView({ roomId, myName, flipIntervalMin, onOpenSettings }: Pr
         <button type="button" className="pair-arm-button" onClick={arm} disabled={!myName.trim()}>
           {myName.trim() ? "Connect" : "Set your name first"}
         </button>
-        <button type="button" className="pair-arm-secondary" onClick={onOpenSettings}>
-          Open settings
-        </button>
         <p className="pair-hint">
-          Room <code>{roomId}</code>
+          Room <code>{roomId}</code> · use the ⚙ gear to set your name
         </p>
       </div>
     );
