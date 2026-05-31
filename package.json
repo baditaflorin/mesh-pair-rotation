@@ -1,6 +1,6 @@
 {
   "name": "mesh-pair-rotation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Peer-to-peer mesh: pair-programming rotation manager. Suggest fresh pairs, sync driver-navigator role flip every 25 min.",
   "type": "module",
   "private": false,
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
+    "@types/node": "^22.10.0",
     "@vitejs/plugin-react": "^5.1.1",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",
