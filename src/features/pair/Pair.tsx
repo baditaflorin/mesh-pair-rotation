@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTone } from "@baditaflorin/mesh-common";
 import { createRoomSync } from "../sync/yjsRoom";
 import { createClockSync } from "../sync/clockSync";
 import { maybeFetchTurnCredentials } from "../sync/iceConfig";
@@ -48,7 +49,7 @@ export function PairView({ roomId, myName, flipIntervalMin }: Props) {
   const [proposedRest, setProposedRest] = useState<string[]>([]);
   const [locked, setLocked] = useState<Set<string>>(new Set());
 
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const tone = useTone();
   const prevHalfRef = useRef<number | null>(null);
 
   const meshHandle = useMemo(() => {
@@ -138,7 +139,14 @@ export function PairView({ roomId, myName, flipIntervalMin }: Props) {
       const inAPair = sprint.pairs.some(([a, b]) => a === myName.trim() || b === myName.trim());
       if (inAPair) {
         maybeVibrate([100, 60, 100]);
-        chirp(audioCtxRef.current);
+        tone.play({
+          freq: 560,
+          glideTo: 800,
+          type: "triangle",
+          duration: 0.18,
+          gain: 0.06,
+          attack: 0.02,
+        });
       }
     }
   }, [now, sprint, myName]);
@@ -190,8 +198,7 @@ export function PairView({ roomId, myName, flipIntervalMin }: Props) {
   };
 
   const arm = () => {
-    audioCtxRef.current ??= new AudioContext();
-    void audioCtxRef.current.resume();
+    void tone.resume();
     setArmed(true);
   };
 
@@ -339,21 +346,6 @@ function maybeVibrate(pattern: number[]) {
   } catch {
     /* noop */
   }
-}
-
-function chirp(ctx: AudioContext | null) {
-  if (!ctx) return;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "triangle";
-  osc.frequency.setValueAtTime(560, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.12);
-  gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
-  osc.connect(gain).connect(ctx.destination);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.2);
 }
 
 function formatClock(totalSeconds: number): string {
