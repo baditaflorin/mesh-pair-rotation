@@ -87,6 +87,22 @@ export function recordPairings(
 
 export { pairKey };
 
+/**
+ * Which half of the driver/navigator rotation a sprint is in:
+ * 0 = first-listed name drives, 1 = second-listed drives.
+ *
+ * Clamps negative elapsed to the pre-flip 0 half — before a sprint's
+ * `startedAt`, nobody has flipped yet. This matters ACROSS PHONES: mesh
+ * clock-sync skew can put one phone a few ms before `startedAt` while another
+ * is a few ms after. A bare `Math.floor(-1 / n) % 2` returns `-1` in JS, which
+ * flips that phone to the OTHER driver and silently desyncs the pair. Clamping
+ * keeps both phones agreeing on the same driver.
+ */
+export function flipHalf(elapsedMs: number, flipIntervalMs: number): number {
+  if (elapsedMs <= 0 || flipIntervalMs <= 0) return 0;
+  return Math.floor(elapsedMs / flipIntervalMs) % 2;
+}
+
 function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return function () {

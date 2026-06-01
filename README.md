@@ -31,9 +31,11 @@ and the same remaining-to-flip time as everyone else.
 4. **Confirm and start sprint** writes the sprint record into
    `Y.Map<sprintId, Sprint>("sprints")` and updates `history` for every
    new pair, all in one Yjs transaction.
-5. **Role flip** is `Math.floor((meshNow - sprint.startedAt) /
-flipIntervalMs) % 2`. Both phones in a pair compute identically;
-   when the value changes, they vibrate.
+5. **Role flip** is `floor(max(0, meshNow - sprint.startedAt) /
+flipIntervalMs) % 2` (`flipHalf` in `matching.ts`). Both phones in a
+   pair compute identically; clamping elapsed at 0 keeps a phone whose
+   mesh-clock lands a few ms _before_ `startedAt` from flipping to the
+   wrong driver. When the value changes, they vibrate.
 
 ## Privacy threat model
 

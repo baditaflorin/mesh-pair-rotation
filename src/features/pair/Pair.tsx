@@ -7,6 +7,7 @@ import {
   suggestPairs,
   recordPairings,
   pairKey,
+  flipHalf,
   type Pair as PairTuple,
   type PairHistory,
 } from "./matching";
@@ -127,8 +128,7 @@ export function PairView({ roomId, myName, flipIntervalMin }: Props) {
       prevHalfRef.current = null;
       return;
     }
-    const elapsed = now - sprint.startedAt;
-    const half = Math.floor(elapsed / sprint.flipIntervalMs) % 2;
+    const half = flipHalf(now - sprint.startedAt, sprint.flipIntervalMs);
     if (prevHalfRef.current === null) {
       prevHalfRef.current = half;
       return;
@@ -224,14 +224,16 @@ export function PairView({ roomId, myName, flipIntervalMin }: Props) {
     );
   }
 
-  const elapsedMs = sprint ? now - sprint.startedAt : 0;
-  const half = sprint ? Math.floor(elapsedMs / sprint.flipIntervalMs) % 2 : 0;
+  const elapsedMs = sprint ? Math.max(0, now - sprint.startedAt) : 0;
+  const half = sprint ? flipHalf(elapsedMs, sprint.flipIntervalMs) : 0;
   const nextFlipMs = sprint ? sprint.flipIntervalMs - (elapsedMs % sprint.flipIntervalMs) : 0;
 
   return (
     <div className="pair-stage">
       <div className="pair-hud">
-        <span>{peers + 1} phones</span>
+        <span>
+          {peers + 1} {peers + 1 === 1 ? "phone" : "phones"}
+        </span>
         <span aria-hidden="true">·</span>
         <span>sprint {sprintId}</span>
       </div>
@@ -248,6 +250,11 @@ export function PairView({ roomId, myName, flipIntervalMin }: Props) {
           </span>
         ))}
       </div>
+      {roster.length < 2 && (
+        <p className="pair-rest">
+          Waiting for teammates — share this room (📡 top-right) so they join, then Suggest pairs.
+        </p>
+      )}
 
       <div className="pair-actions">
         <button type="button" onClick={proposeNewPairs} disabled={roster.length < 2}>

@@ -67,6 +67,18 @@ test("a generated pairing on peer A is seen identically by peer B", async ({
     const bCard = b.locator(".pair-list .pair-card-active");
     await expect(bCard).toContainText("Alice");
     await expect(bCard).toContainText("Bob");
+
+    // THE HEADLINE FEATURE: both phones derive the SAME driver/navigator role
+    // from the synced sprint (startedAt + flipIntervalMs) over mesh-time — not
+    // just the same pairing. The active card reads "<driver> drives — <nav>
+    // navigates"; the driver name must be identical on A and B, or the role
+    // flip would desync between phones.
+    const driverOf = async (page: typeof a): Promise<string> => {
+      const text = (await page.locator(".pair-list .pair-card-active").first().innerText()).trim();
+      return /^(.+?)\s+drives\b/.exec(text)?.[1]?.trim() ?? "";
+    };
+    await expect.poll(() => driverOf(a)).toMatch(/^(Alice|Bob)$/);
+    expect(await driverOf(b)).toBe(await driverOf(a));
   } finally {
     await cleanup();
   }
